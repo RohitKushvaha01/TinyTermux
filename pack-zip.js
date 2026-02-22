@@ -5,6 +5,7 @@ const jszip = require('jszip');
 const iconFile = path.join(__dirname, 'icon.png');
 const pluginJSON = path.join(__dirname, 'plugin.json');
 const distFolder = path.join(__dirname, 'dist');
+const assetsFolder = path.join(__dirname, 'assets');
 const json = JSON.parse(fs.readFileSync(pluginJSON, 'utf8'));
 let readmeDotMd;
 let changelogDotMd;
@@ -42,6 +43,7 @@ if (changelogDotMd) {
 }
 
 loadFile('', distFolder);
+loadFile('', assetsFolder)
 
 zip
   .generateNodeStream({ type: 'nodebuffer', streamFiles: true })
