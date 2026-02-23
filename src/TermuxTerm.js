@@ -14,6 +14,10 @@ const TermuxTerm = {
         if (installing) {
             return new Promise((resolve, reject) => {
 
+                readAsset("init.sh", async (content) => {
+                    system.writeText(`${filesDir}/init.sh`, content, logger, err_logger);
+                });
+
                 readAsset("init-sandbox.sh", (content) => {
                     system.writeText(`${filesDir}/init-sandbox.sh`, content, logger, err_logger);
 
@@ -32,11 +36,13 @@ const TermuxTerm = {
                     });
                 });
 
-                readAsset("init.sh", async (content) => {
-                    system.writeText(`${filesDir}/init.sh`, content, logger, err_logger);
-                });
+
             });
         } else {
+
+            readAsset("init.sh", async (content) => {
+                system.writeText(`${filesDir}/init.sh`, content, logger, err_logger);
+            });
 
             readAsset("init-sandbox.sh", (content) => {
                 system.writeText(`${filesDir}/init-sandbox.sh`, content, logger, err_logger);
@@ -48,9 +54,7 @@ const TermuxTerm = {
                 });
             });
 
-            readAsset("init.sh", async (content) => {
-                system.writeText(`${filesDir}/init.sh`, content, logger, err_logger);
-            });
+
         }
     },
 
@@ -122,21 +126,22 @@ const TermuxTerm = {
                 libTalloc = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm64/libtalloc.so";
                 prootUrl = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm64/libproot-xed.so";
                 axsUrl = `https://github.com/bajrangCoder/acodex_server/releases/latest/download/axs-musl-android-arm64`;
-                rootfsUrl = "http://10.159.181.37:8080/bootstrap-aarch64.zip";
-            } else if (arch === "armeabi-v7a") {
+                rootfsUrl = "http://10.159.181.37:8080/rootfs.tar";
+            } /*else if (arch === "armeabi-v7a") {
                 libproot = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm32/libproot.so";
                 libTalloc = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm32/libtalloc.so";
                 prootUrl = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm32/libproot-xed.so";
                 axsUrl = `https://github.com/bajrangCoder/acodex_server/releases/latest/download/axs-musl-android-armv7`;
                 //termuxUrl = 
-            } else if (arch === "x86_64") {
+            }else if (arch === "x86_64") {
                 libproot = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/x64/libproot.so";
                 libproot32 = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/x64/libproot32.so";
                 libTalloc = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/x64/libtalloc.so";
                 prootUrl = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/x64/libproot-xed.so";
                 axsUrl = `https://github.com/bajrangCoder/acodex_server/releases/latest/download/axs-musl-android-x86_64`;
                 //termuxUrl = 
-            } else {
+            }*/ else {
+                err_logger(`Unsupported architecture: ${arch}`)
                 throw new Error(`Unsupported architecture: ${arch}`);
             }
 
@@ -145,7 +150,7 @@ const TermuxTerm = {
             await new Promise((resolve, reject) => {
                 cordova.plugin.http.downloadFile(
                     rootfsUrl, {}, {},
-                    cordova.file.dataDirectory + "rootfs.zip",
+                    cordova.file.dataDirectory + "rootfs.tar",
                     resolve, reject
                 );
             });
@@ -206,18 +211,22 @@ const TermuxTerm = {
 
             logger("📁  Setting up directories...");
 
-            await new Promise((resolve, reject) => {
-                system.mkdirs(`${filesDir}/.downloaded`, resolve, reject);
-            });
-
             const rootfsDir = `${filesDir}/rootfs`;
 
-            await new Promise((resolve, reject) => {
-                system.mkdirs(rootfsDir, resolve, reject);
-            });
+            try {
+                await new Promise((resolve, reject) => {
+                    system.mkdirs(`${filesDir}/.downloaded`, resolve, reject);
+                });
+
+                await new Promise((resolve, reject) => {
+                    system.mkdirs(rootfsDir, resolve, reject);
+                });
+            } catch (e) {
+                console.error(e)
+            }
 
             logger("📦  Extracting sandbox filesystem...");
-            await Executor.execute(`unzip ${filesDir}/../rootfs.zip -d ${rootfsDir}`);
+            await Executor.execute(`cd ${rootfsDir} && tar -xf ${filesDir}/../rootfs.tar`);
 
             logger("✅  Extraction complete");
             await new Promise((resolve, reject) => {
@@ -247,7 +256,7 @@ const TermuxTerm = {
             })}/termux`;
 
             const termuxExists = await new Promise((resolve, reject) => {
-                system.fileExists(`${filesDir}/termux`, false, (result) => {
+                system.fileExists(`${filesDir}`, false, (result) => {
                     resolve(result == 1);
                 }, reject);
             });

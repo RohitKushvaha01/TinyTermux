@@ -1,3 +1,4 @@
+export PREFIX=/data/data/com.foxdebug.acode/files
 export LD_LIBRARY_PATH=$PREFIX
 
 mkdir -p "$PREFIX/tmp"
@@ -50,7 +51,7 @@ for system_mnt in /apex /odm /product /system /system_ext /vendor /linkerconfig/
 done
 
 
-
+mkdir -p $PREFIX/termux/com.termux
 
 unset system_mnt
 
@@ -60,8 +61,8 @@ ARGS="$ARGS -b /dev"
 ARGS="$ARGS -b /data"
 ARGS="$ARGS -b /dev/urandom:/dev/random"
 ARGS="$ARGS -b /proc"
-ARGS="$ARGS -b /sys"
 ARGS="$ARGS -b $PREFIX"
+ARGS="$ARGS -b $PREFIX/termux/com.termux:/data/data/com.termux"
 ARGS="$ARGS -b $PREFIX/termux/rootfs:/data/data/com.termux/files/usr"
 ARGS="$ARGS -b $PREFIX/public:/public"
 ARGS="$ARGS -b $PREFIX/alpine/tmp:/dev/shm"
@@ -84,7 +85,7 @@ if [ -e "/proc/self/fd/2" ]; then
 fi
 
 
-ARGS="$ARGS -r /"
+ARGS="$ARGS -r $PREFIX/termux/rootfs"
 ARGS="$ARGS --link2symlink"
 ARGS="$ARGS --sysvipc"
 ARGS="$ARGS -L"

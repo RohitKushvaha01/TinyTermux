@@ -1,5 +1,4 @@
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/share/bin:/usr/share/sbin:/usr/local/bin:/usr/local/sbin:/system/bin:/system/xbin:$PREFIX/local/bin
-export PS1="\[\e[38;5;46m\]\u\[\033[39m\]@localhost \[\033[39m\]\w \[\033[0m\]\\$ "
 export HOME=/home
 export TERM=xterm-256color
 
@@ -26,10 +25,4 @@ fi
 export PRIVATE_FILE=$PREFIX
 export PREFIX=/data/data/com.termux/usr
 
-#actual source
-#everytime a terminal is started initrc will run
-"$PRIVATE_FILE/axs" -c "/bin/sh"
-
-else
-    exec "$@"
-fi
+"$PRIVATE_FILE/axs" -c "/bin/login"
