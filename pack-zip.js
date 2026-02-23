@@ -46,7 +46,14 @@ loadFile('', distFolder);
 loadFile('', assetsFolder)
 
 zip
-  .generateNodeStream({ type: 'nodebuffer', streamFiles: true })
+  .generateNodeStream({
+    type: 'nodebuffer',
+    streamFiles: true,
+    compression: "DEFLATE",
+    compressionOptions: {
+      level: 9 // maximum
+    }
+  })
   .pipe(fs.createWriteStream(path.join(__dirname, 'plugin.zip')))
   .on('finish', () => {
     console.log('Plugin plugin.zip written.');

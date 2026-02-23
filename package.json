@@ -1,18 +1,19 @@
 {
-  "name": "acode-plugin",
+  "name": "rk.termux",
   "version": "1.0.0",
-  "description": "Template for Acode plugin",
+  "description": "TinyTermux",
   "main": "src/main.js",
   "repository": "https://github.com/Acode-Foundation/acode-plugin.git",
-  "author": "Acode Foundation",
-  "license": "MIT",
+  "author": "RohitKushvaha01",
+  "license": "Proprietary",
   "dependencies": {
     "acode-plugin-types": "^1.11.7-patch.2",
     "html-tag-js": "^2.4.15"
   },
   "devDependencies": {
     "esbuild": "^0.25.8",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "javascript-obfuscator": "^4.1.1"
   },
   "scripts": {
     "dev": "node esbuild.config.mjs --serve",

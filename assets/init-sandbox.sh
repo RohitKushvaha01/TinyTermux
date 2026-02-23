@@ -1,6 +1,3 @@
-export PREFIX=/data/data/com.foxdebug.acode/files
-export LD_LIBRARY_PATH=$PREFIX
-
 mkdir -p "$PREFIX/tmp"
 mkdir -p "$PREFIX/alpine/tmp"
 mkdir -p "$PREFIX/public"
@@ -91,3 +88,5 @@ ARGS="$ARGS --sysvipc"
 ARGS="$ARGS -L"
 
 $PROOT $ARGS /bin/sh $PREFIX/termux/init.sh "$@"
+
+##yoyo

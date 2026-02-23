@@ -113,8 +113,8 @@ const TermuxTerm = {
         });
 
         try {
-            let rootfsUrl;
-            let axsUrl;
+            //let rootfsUrl;
+            //let axsUrl;
             let prootUrl;
             let libTalloc;
             let libproot = null;
@@ -125,8 +125,8 @@ const TermuxTerm = {
                 libproot32 = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm64/libproot32.so";
                 libTalloc = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm64/libtalloc.so";
                 prootUrl = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm64/libproot-xed.so";
-                axsUrl = `https://github.com/bajrangCoder/acodex_server/releases/latest/download/axs-musl-android-arm64`;
-                rootfsUrl = "http://10.159.181.37:8080/rootfs.tar";
+                //axsUrl = `${window.Termux.baseUrl}/axs-musl-android-arm64`
+                //rootfsUrl = `${window.Termux.baseUrl}/rootfs.tar`;
             } /*else if (arch === "armeabi-v7a") {
                 libproot = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm32/libproot.so";
                 libTalloc = "https://raw.githubusercontent.com/Acode-Foundation/Acode/main/src/plugins/proot/libs/arm32/libtalloc.so";
@@ -146,23 +146,65 @@ const TermuxTerm = {
             }
 
 
-            logger("⬇️  Downloading sandbox filesystem...");
-            await new Promise((resolve, reject) => {
+            logger("⬇️  Installing sandbox filesystem...");
+
+
+            window.resolveLocalFileSystemURL(`${window.Termux.baseUrl}/rootfs.tar`, function (fileEntry) {
+
+                window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dirEntry) {
+
+                    fileEntry.copyTo(
+                        dirEntry,
+                        "rootfs.tar",
+                        function (newFileEntry) {
+                            console.log("Copied successfully:", newFileEntry.toURL());
+                        },
+                        function (err) {
+                            console.error("Copy failed:", err);
+                        }
+                    );
+
+                }, console.error);
+
+            }, console.error);
+
+            /*await new Promise((resolve, reject) => {
                 cordova.plugin.http.downloadFile(
                     rootfsUrl, {}, {},
                     cordova.file.dataDirectory + "rootfs.tar",
                     resolve, reject
                 );
-            });
+            });*/
 
-            logger("⬇️  Downloading axs...");
-            await new Promise((resolve, reject) => {
+            logger("⬇️  Installing axs...");
+
+
+            window.resolveLocalFileSystemURL(`${window.Termux.baseUrl}/axs-musl-android-arm64`, function (fileEntry) {
+
+                window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dirEntry) {
+
+                    fileEntry.copyTo(
+                        dirEntry,
+                        "axs",
+                        function (newFileEntry) {
+                            console.log("Copied successfully:", newFileEntry.toURL());
+                        },
+                        function (err) {
+                            console.error("Copy failed:", err);
+                        }
+                    );
+
+                }, console.error);
+
+            }, console.error);
+
+            /*await new Promise((resolve, reject) => {
                 cordova.plugin.http.downloadFile(
                     axsUrl, {}, {},
                     cordova.file.dataDirectory + "axs",
                     resolve, reject
                 );
-            });
+            });*/
 
             const isFdroid = await Executor.execute("echo $FDROID");
             if (isFdroid === "true") {
